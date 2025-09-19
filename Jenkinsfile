@@ -2,7 +2,7 @@ pipeline{
     agent {label 'cloud-agent'}
 
     environment{
-        imagename= "raghavbhayana/nodeapp_docker_jenkins"
+        imagename= "nodeapp_docker_jenkins"
         tag= "latest"
     }
 
@@ -33,10 +33,16 @@ pipeline{
                 '''
             }
         }
+        stage('renaming image'){
+            steps{
+                sh '''
+                docker tag  $imagename raghavbhayana/$imagename
+            }
+        }
         stage('pushing to docker hub'){
             steps{
                 sh '''
-                sudo docker push $imagename:$tag
+                docker push $imagename:$tag
                 '''
             }
         }

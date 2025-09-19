@@ -43,15 +43,17 @@ pipeline{
         }
         stage('pushing to docker hub'){
             steps{
-                sh '''
+                
                  withCredentials([usernamePassword(
                     credentialsId: 'dockercreds', 
                     usernameVariable: 'username',
                     passwordVariable: 'password')])
                     {
+                   sh '''
                     sudo docker push raghavbhayana/$imagename:$tag
+                    '''
                 }
-                '''
+                
             }
         }
     }

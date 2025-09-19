@@ -29,14 +29,14 @@ pipeline{
         stage('building docker image'){
             steps{
                 sh '''
-                docker build -t $imagename:$tag .
+                sudo docker build -t $imagename:$tag .
                 '''
             }
         }
         stage('pushing to docker hub'){
             steps{
                 sh '''
-                docker push $imagename:$tag
+                sudo docker push $imagename:$tag
                 '''
             }
         }

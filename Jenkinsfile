@@ -36,7 +36,8 @@ pipeline{
         stage('renaming image'){
             steps{
                 sh '''
-                docker tag  $imagename raghavbhayana/$imagename
+                docker tag  $imagename raghavbhayana/$imagename 
+                '''
             }
         }
         stage('pushing to docker hub'){

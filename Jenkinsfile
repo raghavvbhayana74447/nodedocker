@@ -21,7 +21,8 @@ pipeline{
                     usernameVariable: 'username',
                     passwordVariable: 'password')]){
                         sh '''
-                        docker login -u $username -p $password
+                        whoami
+                        sudo docker login -u $username -p $password
                         '''
                     }
             }
@@ -36,14 +37,20 @@ pipeline{
         stage('renaming image'){
             steps{
                 sh '''
-                sudo docker tag  $imagename raghavbhayana/$imagename 
+                sudo docker tag  $imagename raghavbhayana/$imagename:$tag
                 '''
             }
         }
         stage('pushing to docker hub'){
             steps{
                 sh '''
-                sudo docker push $imagename:$tag
+                 withCredentials([usernamePassword(
+                    credentialsId: 'dockercreds', 
+                    usernameVariable: 'username',
+                    passwordVariable: 'password')])
+                    {
+                    sudo docker push raghavbhayana/$imagename:$tag
+                }
                 '''
             }
         }

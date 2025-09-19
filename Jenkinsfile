@@ -2,8 +2,8 @@ pipeline{
     agent {label 'cloud-agent'}
 
     environment{
-        imagename: "raghavbhayana/nodeapp_docker_jenkins"
-        tag: "latest"
+        imagename= "raghavbhayana/nodeapp_docker_jenkins"
+        tag= "latest"
     }
 
     stages{
@@ -18,8 +18,8 @@ pipeline{
                 sh 'echo "Fecthing username and password"'
                 withCredentials([usernamePassword(
                     credentialsId: 'dockercreds', 
-                    username: 'username',
-                    password: 'password')]){
+                    usernameVariable: 'username',
+                    passwordVariable: 'password')]){
                         sh '''
                         docker login -u $username -p $password
                         '''
@@ -35,7 +35,9 @@ pipeline{
         }
         stage('pushing to docker hub'){
             steps{
+                sh '''
                 docker push $imagename:$tag
+                '''
             }
         }
     }

@@ -43,32 +43,39 @@ pipeline{
                 az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
                 az account set --subscription $AZURE_SUBSCRIPTION_ID 
                 az acr login --name demoregistry74447 
-                '''
-                }
-            }
-        }
-        stage('renaming image'){
-            steps{
-                sh '''
                 sudo docker tag  $imagename demoregistry74447.azurecr.io/$imagename:$tag
-                '''
-            }
-        }
-        stage('pushing to azure container regitry'){
-            steps{
-                withCredentials([azureServicePrincipal(credentialsId: 'AzureServicePrincipal')]) {
-                sh '''
-                az logout
-                az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
-                az account set --subscription $AZURE_SUBSCRIPTION_ID 
-
                 echo "pushing to acr"
-                az acr login --name demoregistry74447 
-                sudo docker push demoregistry74447.azurecr.io/$imagename:$tag
+            
+                sudo docker push demoregistry74447.azurecr.io/$imagename:$tag                
+
                 '''
                 }
             }
         }
+        // stage('renaming image'){
+        //     steps{
+        //         sh '''
+        //         sudo docker tag  $imagename demoregistry74447.azurecr.io/$imagename:$tag
+        //         '''
+        //     }
+        // }
+        // stage('pushing to azure container regitry'){
+        //     steps{
+        //         withCredentials([azureServicePrincipal(credentialsId: 'AzureServicePrincipal')]) {
+        //         sh '''
+        //         az logout
+        //         az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
+        //         az account set --subscription $AZURE_SUBSCRIPTION_ID 
+                
+        //         docker login demoregistry74447.azurecr.io
+
+        //         echo "pushing to acr"
+        //         az acr login --name demoregistry74447 
+        //         sudo docker push demoregistry74447.azurecr.io/$imagename:$tag
+        //         '''
+        //         }
+        //     }
+        // }
 
 
 

@@ -45,8 +45,8 @@ pipeline{
                 az acr login --name demoregistry74447 
                 sudo docker tag  $imagename demoregistry74447.azurecr.io/$imagename:$tag
                 echo "pushing to acr"
-                docker login demoregistry74447.azurecr.io
-                sudo docker push demoregistry74447.azurecr.io/$imagename:$tag                
+                docker login demoregistry74447.azurecr.io -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET
+                sudo docker push demoregistry74447.azurecr.io/$imagename:$tag
 
                 '''
                 }
@@ -80,22 +80,22 @@ pipeline{
 
 
 
-        stage('pushing to docker hub'){
-            steps{
+        // stage('pushing to docker hub'){
+        //     steps{
                 
-                  withCredentials([usernamePassword(
-                    credentialsId: 'dockercreds', 
-                    usernameVariable: 'username',
-                    passwordVariable: 'password')])
-                   {
-                 sh '''
-                    sudo docker push raghavbhayana/$imagename:$tag
-                         docker login demoregistry74447.azurecr.io
-                sudo docker push demoregistry74447.azurecr.io/$imagename:$tag 
-                    '''
-                 }
+        //           withCredentials([usernamePassword(
+        //             credentialsId: 'dockercreds', 
+        //             usernameVariable: '$AZURE_CLIENT_ID',
+        //             passwordVariable: '$AZURE_CLIENT_SECRET')])
+        //            {
+        //          sh '''
+        //             // sudo docker push raghavbhayana/$imagename:$tag
+        //             docker login demoregistry74447.azurecr.io
+        //             sudo docker push demoregistry74447.azurecr.io/$imagename:$tag 
+        //             '''
+        //          }
                 
-             }
-         }
+        //      }
+        //  }
     }
 }

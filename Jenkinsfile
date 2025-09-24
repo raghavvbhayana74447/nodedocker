@@ -2,31 +2,31 @@ pipeline{
     agent {label 'cloud-agent'}
 
     environment{
-        imagename= "nodeapp_docker_jenkins"
+        imagename= "nodeappdocker"
         tag= "latest"
     }
 
     stages{
         stage('pulling git repo'){
             steps{
-                git url: 'https://github.com/raghavvbhayana74447/docker.git', 
+                git url: 'https://github.com/raghavvbhayana74447/nodedocker.git', 
                 branch: 'main'
             }
         }
-        stage('docker login'){
-            steps{
-                sh 'echo "Fecthing username and password"'
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockercreds', 
-                    usernameVariable: 'username',
-                    passwordVariable: 'password')]){
-                        sh '''
-                        whoami
-                        sudo docker login -u $username -p $password
-                        '''
-                    }
-            }
-        }
+        // stage('docker login'){
+        //     steps{
+        //         sh 'echo "Fecthing username and password"'
+        //         withCredentials([usernamePassword(
+        //             credentialsId: 'dockercreds', 
+        //             usernameVariable: 'username',
+        //             passwordVariable: 'password')]){
+        //                 sh '''
+        //                 whoami
+        //                 sudo docker login -u $username -p $password
+        //                 '''
+        //             }
+        //     }
+        // }
         stage('building docker image'){
             steps{
                 sh '''
@@ -34,27 +34,46 @@ pipeline{
                 '''
             }
         }
-        stage('renaming image'){
+
+        stage('acr login '){
             steps{
                 sh '''
-                sudo docker tag  $imagename raghavbhayana/$imagename:$tag
+                sudo docker login demoregistry74447.azurecr.io 
                 '''
             }
         }
-        stage('pushing to docker hub'){
+        stage('renaming image'){
             steps{
-                
-                 withCredentials([usernamePassword(
-                    credentialsId: 'dockercreds', 
-                    usernameVariable: 'username',
-                    passwordVariable: 'password')])
-                    {
-                   sh '''
-                    sudo docker push raghavbhayana/$imagename:$tag
-                    '''
-                }
-                
+                sh '''
+                sudo docker tag  $imagename demoregistry74447.azurecr.io/$imagename:$tag
+                '''
             }
         }
+        stage('pushing to azure container regitry'){
+            steps{
+                echo "pushing to acr"
+                sh ''' 
+                sudo docker push demoregistry74447.$imagename:$tag
+                '''
+            }
+        }
+
+
+
+        // stage('pushing to docker hub'){
+        //     steps{
+                
+        //          withCredentials([usernamePassword(
+        //             credentialsId: 'dockercreds', 
+        //             usernameVariable: 'username',
+        //             passwordVariable: 'password')])
+        //             {
+        //            sh '''
+        //             sudo docker push raghavbhayana/$imagename:$tag
+        //             '''
+        //         }
+                
+        //     }
+        // }
     }
 }

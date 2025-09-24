@@ -60,7 +60,7 @@ pipeline{
                 az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
                 az account set --subscription $AZURE_SUBSCRIPTION_ID 
                 echo "pushing to acr"
-                sudo docker push demoregistry74447.$imagename:$tag
+                sudo docker push demoregistry74447.azurecr.io.$imagename:$tag
                 '''
                 }
             }

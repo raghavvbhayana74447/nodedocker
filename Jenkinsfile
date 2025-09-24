@@ -39,6 +39,7 @@ pipeline{
             steps{
                 withCredentials([azureServicePrincipal(credentialsId: 'AzureServicePrincipal')]) {
                 sh '''
+                az logout
                 az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
                 az account set --subscription $AZURE_SUBSCRIPTION_ID 
                 az acr login --name demoregistry74447 
@@ -57,6 +58,7 @@ pipeline{
             steps{
                 withCredentials([azureServicePrincipal(credentialsId: 'AzureServicePrincipal')]) {
                 sh '''
+                az logout
                 az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
                 az account set --subscription $AZURE_SUBSCRIPTION_ID 
 

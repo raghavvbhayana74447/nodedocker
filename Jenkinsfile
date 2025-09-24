@@ -38,7 +38,7 @@ pipeline{
         stage('acr login '){
             steps{
                 sh '''
-                sudo docker login demoregistry74447.azurecr.io 
+                sudo az acr login --name demoregistry74447 
                 '''
             }
         }

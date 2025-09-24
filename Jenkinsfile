@@ -13,20 +13,20 @@ pipeline{
                 branch: 'main'
             }
         }
-        // stage('docker login'){
-        //     steps{
-        //         sh 'echo "Fecthing username and password"'
-        //         withCredentials([usernamePassword(
-        //             credentialsId: 'dockercreds', 
-        //             usernameVariable: 'username',
-        //             passwordVariable: 'password')]){
-        //                 sh '''
-        //                 whoami
-        //                 sudo docker login -u $username -p $password
-        //                 '''
-        //             }
-        //     }
-        // }
+        stage('docker login'){
+            steps{
+                sh 'echo "Fecthing username and password"'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockercreds', 
+                    usernameVariable: 'username',
+                    passwordVariable: 'password')]){
+                        sh '''
+                        whoami
+                        sudo docker login -u $username -p $password
+                        '''
+                    }
+            }
+        }
         stage('building docker image'){
             steps{
                 sh '''
@@ -45,13 +45,14 @@ pipeline{
                 az acr login --name demoregistry74447 
                 sudo docker tag  $imagename demoregistry74447.azurecr.io/$imagename:$tag
                 echo "pushing to acr"
-            
+                docker login demoregistry74447.azurecr.io
                 sudo docker push demoregistry74447.azurecr.io/$imagename:$tag                
 
                 '''
                 }
             }
         }
+
         // stage('renaming image'){
         //     steps{
         //         sh '''
@@ -79,20 +80,22 @@ pipeline{
 
 
 
-        // stage('pushing to docker hub'){
-        //     steps{
+        stage('pushing to docker hub'){
+            steps{
                 
-        //          withCredentials([usernamePassword(
-        //             credentialsId: 'dockercreds', 
-        //             usernameVariable: 'username',
-        //             passwordVariable: 'password')])
-        //             {
-        //            sh '''
-        //             sudo docker push raghavbhayana/$imagename:$tag
-        //             '''
-        //         }
+                  withCredentials([usernamePassword(
+                    credentialsId: 'dockercreds', 
+                    usernameVariable: 'username',
+                    passwordVariable: 'password')])
+                   {
+                 sh '''
+                    sudo docker push raghavbhayana/$imagename:$tag
+                         docker login demoregistry74447.azurecr.io
+                sudo docker push demoregistry74447.azurecr.io/$imagename:$tag 
+                    '''
+                 }
                 
-        //     }
-        // }
+             }
+         }
     }
 }

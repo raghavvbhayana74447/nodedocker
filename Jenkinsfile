@@ -37,9 +37,13 @@ pipeline{
 
         stage('acr login '){
             steps{
+                withCredentials([azureServicePrincipal(credentialsId: 'AzureServicePrincipal')]) {
                 sh '''
-                sudo az acr login --name demoregistry74447 
+                az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
+                az account set --subscription $AZURE_SUBSCRIPTION_ID 
+                az acr login --name demoregistry74447 
                 '''
+                }
             }
         }
         stage('renaming image'){
@@ -51,10 +55,14 @@ pipeline{
         }
         stage('pushing to azure container regitry'){
             steps{
+                withCredentials([azureServicePrincipal(credentialsId: 'AzureServicePrincipal')]) {
+                sh '''
+                az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
+                az account set --subscription $AZURE_SUBSCRIPTION_ID 
                 echo "pushing to acr"
-                sh ''' 
                 sudo docker push demoregistry74447.$imagename:$tag
                 '''
+                }
             }
         }
 

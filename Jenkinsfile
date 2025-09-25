@@ -59,14 +59,14 @@ pipeline {
         stage('Configure App Service to pull image from ACR using Identity') {
             steps {
                 sh '''
-                identityClientId=$(az identity show --resource-group $resourceGroup --name $identityName --query clientId -o tsv)
+               // identityClientId=$(az identity show --resource-group $resourceGroup --name $identityName --query clientId -o tsv)
 
                 az webapp config container set \
                   --name $appName \
                   --resource-group $resourceGroup \
                   --docker-custom-image-name $acrLoginServer/$imagename:$tag \
                   --docker-registry-server-url https://$acrLoginServer \
-                  --docker-registry-server-user $identityClientId
+                 // --docker-registry-server-user $identityClientId
                 '''
             }
         }

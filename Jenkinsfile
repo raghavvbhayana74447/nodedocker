@@ -43,5 +43,34 @@ pipeline {
                 '''
             }
         }
+        stage('creating identity and retreiving identities'){
+            steps{
+                sh '''
+                az identity create --name myID --resource-group RnD-RaghavRG
+                
+                echo "retreiving id"
+                principalId=$(az identity show --resource-group RnD-RaghavRG --name myID --query principalId --output tsv)
+                registryId=$(az acr show --resource-group RnD-RaghavRG --name demoregistry74447 --query id --output tsv)
+                '''
+            }
+        }
+        stage('assigning role to identity'){
+            steps{
+                sh '''
+                az role assignment create --assignee $principalId --scope $registryId --role "AcrPull"
+                '''
+            }
+        }
+        stage('webhook'){
+            steps{
+                sh '''
+                echo "retreiving ci/cd url"
+                cicdUrl=$(az webapp deployment container config --enable-cd true --name mywebapp74447 --resource-group RnD-RaghavRG --query CI_CD_URL --output tsv)
+                
+                echo "creating webhook"
+                az acr webhook create --name my-webhook --registry demoregistry74447 --uri $cicdUrl --actions push --scope demoregistry74447.azurecr.io/nodeappdocker:latest
+                '''
+            }
+        }
     }
 }

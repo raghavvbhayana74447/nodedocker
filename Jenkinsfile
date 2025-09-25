@@ -48,32 +48,6 @@ pipeline {
             }
         }
 
-        stage('Create Identity') {
-            steps {
-                sh '''
-                az identity create --name $identityName --resource-group $resourceGroup || true
-
-                echo "Retrieving IDs..."
-                principalId=$(az identity show --resource-group $resourceGroup --name $identityName --query principalId --output tsv)
-                registryId=$(az acr show --resource-group $resourceGroup --name $acrName --query id --output tsv)
-
-                echo $principalId > principalId.txt
-                echo $registryId > registryId.txt
-                '''
-            }
-        }
-
-        stage('Assign Role to Identity') {
-            steps {
-                sh '''
-                principalId=$(cat principalId.txt)
-                registryId=$(cat registryId.txt)
-
-                az role assignment create --assignee $principalId --scope $registryId --role "AcrPull" || true
-                '''
-            }
-        }
-
         stage('Assign Identity to App Service') {
             steps {
                 sh '''
@@ -97,16 +71,5 @@ pipeline {
             }
         }
 
-        stage('Setup Webhook for CI/CD') {
-            steps {
-                sh '''
-                echo "Retrieving CI/CD URL..."
-                cicdUrl=$(az webapp deployment container config --enable-cd true --name $appName --resource-group $resourceGroup --query CI_CD_URL --output tsv)
-
-                echo "Creating webhook..."
-                az acr webhook create --name my-webhook --registry $acrName --uri $cicdUrl --actions push --scope $acrLoginServer/$imagename:$tag || true
-                '''
-            }
-        }
     }
 }

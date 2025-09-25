@@ -48,13 +48,13 @@ pipeline {
             }
         }
 
-        stage('Assign Identity to App Service') {
-            steps {
-                sh '''
-                az webapp identity assign --name $appName --resource-group $resourceGroup --identities $identityName
-                '''
-            }
-        }
+        // stage('Assign Identity to App Service') {
+        //     steps {
+        //         sh '''
+        //         az webapp identity assign --name $appName --resource-group $resourceGroup --identities $identityName
+        //         '''
+        //     }
+        // }
 
         stage('Configure App Service to pull image from ACR using Identity') {
             steps {
